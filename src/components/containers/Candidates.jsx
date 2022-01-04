@@ -10,10 +10,10 @@ export default function Candidates({ presence, children: candidates }) {
       <div id='candidate_render' className='flex flex-wrap p-2 justify-center'>
         
         {candidates.map((candidate, index) => {
-          const imageName = candidate.name[0].toLowerCase()
+          const nsmeFirsLetter = candidate.name[0].toLowerCase()
+          const nameWithoutFirstLetter = candidate.name.slice(1)
           const { votes } = candidate
           const percent = (votes / presence) * 100
-          // const elected = index === 0 ? Eleito : 'Não eleito'
           const elected = index === 0 ? <span className='bg-green-200 p-1'>Eleito</span> : <span className='bg-red-200 p-1'> Não eleito</span>;
 
           return (
@@ -25,7 +25,7 @@ export default function Candidates({ presence, children: candidates }) {
               <div className="flex flex-row items-center justify-between space-x-4">
                 
                 <img
-                  src={`./img/${imageName}.png`}
+                  src={`./img/${nsmeFirsLetter}${nameWithoutFirstLetter}.png`}
                   alt={candidate.name}
                   width="50"
                   className="rounded-full"
