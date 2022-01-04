@@ -10,7 +10,7 @@ export default function Candidates({ presence, children: candidates }) {
       <div id='candidate_render' className='flex flex-wrap p-2 justify-center'>
         
         {candidates.map((candidate, index) => {
-          const imageName = candidate.name.toLowerCase()
+          const imageName = candidate.name[0].toLowerCase()
           const { votes } = candidate
           const percent = (votes / presence) * 100
           // const elected = index === 0 ? Eleito : 'Não eleito'
