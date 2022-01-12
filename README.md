@@ -7,7 +7,7 @@
 ✓ Utilização de Function Components<br />
 ✓ Renderização de dados<br />
 ✓ Cálculos diversos<br />
-✓ Utilização de Back End<br />
+✓ Utilização de Back End<br /><br />
 
 <p>A interface foi desenvolvida utilizando React JS e o framework de CSS Tailwind.</p>
 
