@@ -11,9 +11,37 @@ import Main from '../components/containers/Main'
 import Select from '../components/containers/Select'
 import Election from '../components/containers/Election'
 import Candidates from '../components/containers/Candidates'
+import Loading from './../components/Laoding'
+
+/** @jsxImportSource @emotion/react */
+import { jsx, css } from '@emotion/react'
+
+const loadingStyles = css({
+  display: 'flex',
+  alignItems: 'center',
+  margin: 'auto',
+  justifyContent: 'center',
+  height: '100vh',
+  overflow: 'hidden'
+})
+const errorStyles = css({
+  display: 'block',
+  width: '25vw',
+  margin: '65px auto 0',
+  padding: '10px',
+  textAlign: 'center',
+  backgroundColor: '#FCA7A7'
+})
+const errorBody = css({
+backgroundColor: 'var(--white-background)',
+height: '100vh',
+overflow: 'hidden'
+})
 
 export default function ElectionsPage() {
   // define os estados iniciais do app
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [initialData, setInitialData] = useState([])
   const [selectedCity, setSelectedCity] = useState({})
   const [candidatesData, setCandidatesData] = useState([])
@@ -23,9 +51,9 @@ export default function ElectionsPage() {
   useEffect(() => {
     // recebe os dados do back end
     async function getAllData() {
-
+      try {
       const [backendCities, candidatesData] = 
-        await Promise.all([apiGetCitiesData(), apiGetCandidatesData()]);
+        await Promise.all([apiGetCitiesData(), apiGetCandidatesData()])
         
         setInitialData(backendCities)
         setSelectedCity(backendCities[0])
@@ -33,9 +61,12 @@ export default function ElectionsPage() {
         
         const electionsData = await apiGetElectionsData()
         setElectionsData(electionsData)        
-      }
-      getAllData()
-      
+        setLoading(false)
+      } catch (error) {
+        setError(error.message)
+      }        
+    }
+    getAllData()
   }, [])
 
   useEffect(() => {
@@ -67,35 +98,60 @@ export default function ElectionsPage() {
   }  
 
   // as options que vão popular o select das cidades
-  const options = initialData.map(({ id, name }) => ({ id, description: name }));
+  const options = initialData.map(({ id, name }) => ({ id, description: name }))
   
   const {presence} = selectedCity
-  
-  return (
-    <div className='bg-gray-100'>
-      <Header>
-      Marvel vs DC Elections
-      </Header>
-      <Main>
-        <>
 
-          <Select 
-            label='Escolha a cidade:'
-            value={selectedCity.id} 
-            onChange={handleChange}
-          >
-            {/* o children 'options' do select é o array com 
-            id e nome das cidades (do map de initialData)  */}
-            {options} 
-          </Select>
-
-          <Election>{selectedCity}</Election>
-
-          {/* o children de Candidates é o array de objetos -> selectedCityElection */}
-          <Candidates presence={presence}>{selectedCityElection}</Candidates>
-
-        </>
-      </Main>      
-    </div>
+  let appJsx = (
+    <span css={loadingStyles}>
+      <Loading />
+    </span>
   )
+
+  if (error) {
+    appJsx = (
+      <span css={errorBody}>
+        <span css={errorStyles}>
+          {error}
+        </span>
+      </span>
+    )
+  }
+
+  if (!loading) {
+    appJsx = (
+      <>
+        <div className='bg-gray-100'>
+          <Header>
+            Marvel vs DC Elections
+          </Header>
+          <Main>
+            <>
+
+              <Select
+                label='Escolha a cidade:'
+                value={selectedCity.id}
+                onChange={handleChange}
+              >
+                {/* o children 'options' do select é o array com 
+                id e nome das cidades (do map de initialData)  */}
+                {options}
+              </Select>
+
+              <Election>{selectedCity}</Election>
+
+              {/* o children de Candidates é o array de objetos -> selectedCityElection */}
+              <Candidates presence={presence}>{selectedCityElection}</Candidates>
+
+            </>
+          </Main>
+        </div>
+      </>
+    )
+  }
+
+  return (
+    <>{appJsx}</>
+  )
+    
 }
